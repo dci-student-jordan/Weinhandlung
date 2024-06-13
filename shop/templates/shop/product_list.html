@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% block content %}
+    <h1>our d-Wines:</h1>
+    <div style="overflow: scroll; height: 63vh; margin-top: 20px;">
+        <table id="scrollable-table" style="overflow-x:auto;">
+            <thead>
+                <tr>
+                    <th>Name:</th>
+                    <th>Description:</th>
+                    <th>Vintages:</th>
+                    {% if user.is_authenticated %}
+                        {% if user.is_staff %}
+                            <th>Update:</th>
+                            <th>Delete:</th>
+                        {% else %}
+                            <th>Buy:</th>
+                        {% endif %}
+                    {% endif %}
+                </tr>
+            </thead>
+            {% for product in products %}
+                <tr>
+                    {% with product.productvintage_set.all as vintages %}
+                        <td><a class="btn btn btn-outline-light" href="{% url 'shop:product_detail' product.id %}">{{ product.name }}</a></td>
+                        <td title="{{ product.description }}">{{ product.description|truncatewords:15 }}</td>
+                            <td>
+                                <div style="overflow: scroll;">
+                                    {% if vintages %}
+                                        <a class="btn btn btn-outline-light" href="{% url 'shop:vintages' product.id %}">
+                                            {% for vintage in vintages %}
+                                                {{ vintage.vintage }}{% if not forloop.last %}, {% endif %}<br>
+                                            {% endfor %}
+                                        </a>
+                                    {% else %}
+                                        <p>No vintages available.</p>
+                                    {% endif %}
+                                    
+                                    {% if user.is_staff %}
+                                        <a href="{% url 'shop:vintage_create' %}?product={{ product.id }}" style="margin-top: 10px;"><em>add new</em></a>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        {% if user.is_staff %}
+                            <td><a class="btn btn btn-outline-light" href="{% url 'shop:product_update' product.id %}">Update</a></td>
+                            <td><a class="btn btn btn-outline-warning" href="{% url 'shop:product_delete' product.id %}">Delete</a></td>
+                        {% elif user.is_authenticated and vintages %}
+                            <td><a class="btn btn btn-success" href="{% url 'shop:customer_order' product.id %}">Order</a></td>
+                        {% endif %}
+                    {% endwith %}
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+    {% if user.is_staff %}
+        <tr>
+            <td colspan="4">
+                <a class="btn btn-outline-light" style="margin: 20px; width: 80%;" href="{% url 'shop:product_create' %}">Add a new Product</a>
+            </td>
+        </tr>
+    {% endif %}
+{% endblock %}

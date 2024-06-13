@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+<div style="max-height: 75vh; overflow-y: auto;">
+    <form method="post" action="{% url 'shop:product_create' %}" id="new-form">
+    <h3>Add a new product's data here:</h3>
+    {% csrf_token %}
+    {{ form|crispy }}
+    <button class="btn btn-outline-light" method="post" id="submitMess" type="submit">Create</button>
+</form>
+<a class="btn btn-outline-light" href="{% url 'shop:vintage_create' %}" style="margin-top: 10px;">Or create a product's new vintage here</a>
+</div>
+{% endblock %}

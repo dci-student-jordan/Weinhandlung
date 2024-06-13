@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+{% block content %}
+    <h1>our vintages for {{ product.name }}:</h1>
+    <p>({{ product.description }})</p>
+    <div style="overflow: scroll; height: 57vh; margin-top: 20px;">
+        <table id="scrollable-table" style="overflow-x:auto;">
+                <thead>
+                <tr>
+                    <th>Vintage:</th>
+                    <th>Description:</th>
+                    <th>Price:</th>
+                    <th>Available:</th>
+                    {% if user.is_authenticated %}
+                        {% if user.is_staff %}
+                            <th>Update:</th>
+                            <th>Delete:</th>
+                        {% else %}
+                            <th>Buy:</th>
+                        {% endif %}
+                    {% endif %}
+                </tr>
+            </thead>
+            {% for vintage in product.productvintage_set.all|order_by:'vintage' %}
+                <tr>
+                    <td><a class="btn btn btn-outline-light" href="{% url 'shop:vintage_detail' vintage.id %}">{{ vintage.vintage }}</a></td>
+                    <td title="{{ vintage.vintage_description }}">{{ vintage.vintage_description|truncatewords:15 }}</td>
+                    <td>{{ vintage.price }} €</td>
+                    {% if user.is_staff %}
+                        {% with vintage.stock|difference:vintage.available_stock as avail_diff %}
+                            <td>
+                                <p>{{ vintage.available_stock }}</p>
+                                {% if avail_diff %}<p><em>{{ avail_diff }} reserved</em></p>{% endif %}
+                            </td>
+                        {% endwith %}
+                        <td><a class="btn btn btn-outline-light" href="{% url 'shop:vintage_update' vintage.id %}">Update</a></td>
+                        <td><a class="btn btn btn-outline-warning" href="{% url 'shop:vintage_delete' vintage.id %}">Delete</a></td>
+                    {% elif user.is_authenticated %}
+                        <td>{{ vintage.available_stock }}</td>
+                        <td><a class="btn btn btn-success" href="{% url 'shop:customer_order' product.id %}?vintage={{ vintage.id }}">Order</a></td>
+                    {% else %}
+                        <td>{{ vintage.available_stock }}</td>
+                    {% endif %}
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+    {% if user.is_staff %}
+        <a class="btn btn-outline-light" style="margin: 20px; width: 80%;" href="{% url 'shop:vintage_create' %}?product={{ product.id }}">Add a new Vintage</a>
+    {% endif %}
+{% endblock %}

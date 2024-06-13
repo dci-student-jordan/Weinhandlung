@@ -1,0 +1,199 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load custom_filters %}
+{% block content %}
+    <div style="overflow: scroll; padding-left: 20px; padding-bottom: 20px;" class="divme">
+        <h1>Your orders to purchase:</h1>
+        {% with object_list|state_filtered as orders %}
+        <table style="overflow-x:auto;">
+            <tr>
+                <th>Order Date:</th>
+                <th>Product:</th>
+                <th>Amount:</th>
+                <th>Price:</th>
+                <th>Whishlist:</th>
+                <th>Delete:</th>
+            </tr>
+            {% if not orders %}
+                <tr>
+                    <td colspan="5">No orders yet.</td>
+                </tr>
+            {% else %}
+                {% for order in orders %}
+                    <tr>
+                        <td>{{ order.ordered_at }}</td>
+                        <td>{{ order.product }}</td>
+                        <td>
+                            <input type="number" id="quantity_{{order.id}}" data-order-id="{{ order.id }}" value="{{ order.quantity }}" min="1" max="{{order.product.available_stock}}" style="width: 75px;">
+                        </td>
+                        <td>{% widthratio order.quantity 1 order.product.price %} €</td>
+                        <td>
+                            <input type="checkbox" id="whish_{{order.id}}" data-order-id="{{ order.id }}" data-order-state="{{ order.state }}" class="order-checkbox">
+                        </td>
+                        <td>
+                            <form method="post" action="{% url 'shop:customer_delete_order' order.id %}">
+                                {% csrf_token %}
+                                {{ form.as_p }}
+                                <button class="btn btn-outline-warning" type="submit">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+                <tfoot>
+                    <tr>
+                        <td colspan="3"><em>Total Price:</em></td>
+                        <td>{{ orders|sum_prices }} €</td>
+                        <td colspan="2">
+                            <button id="purchase" class="btn btn-success">Purchase</button>
+                        </td>
+                    </tr>
+                </tfoot>
+            {% endif %}
+        </table>
+    </div>
+    {% endwith %}
+    <div style="overflow: scroll; padding-left: 20px; padding-bottom: 20px; margin-top: 20px;" class="divme">
+        <h1>Your whishlist:</h1>
+        {% with object_list|state_filtered:1 as orders %}
+        <table style="overflow-x:auto;">
+            <tr>
+                <th>Order Date:</th>
+                <th>Product:</th>
+                <th>Amount:</th>
+                <th>Price:</th>
+                <th>Whishlist:</th>
+                <th>Delete:</th>
+            </tr>
+            {% if not orders %}
+                <tr>
+                    <td colspan="5">No whishes yet.</td>
+                </tr>
+            {% else %}
+                {% for order in orders %}
+                    <tr>
+                        <td>{{ order.ordered_at }}</td>
+                        <td>{{ order.product }}</td>
+                        <td>
+                            <input type="number" id="quantity_{{order.id}}" data-order-id="{{ order.id }}" value="{{ order.quantity }}" min="1" max="{{order.product.available_stock}}" style="width: 75px;">
+                        </td>
+                        <td>{% widthratio order.quantity 1 order.product.price %} €</td>
+                        <td>
+                            <input type="checkbox" checked id="whish_{{order.id}}" data-order-id="{{ order.id }}" data-order-state="{{ order.state }}" class="order-checkbox">
+                        </td>
+                        <td>
+                            <form method="post" action="{% url 'shop:customer_delete_order' order.id %}">
+                                {% csrf_token %}
+                                {{ form.as_p }}
+                                <button class="btn btn-outline-warning" type="submit">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            {% endif %}
+        </table>
+    </div>
+    {% endwith %}
+    <div style="overflow: scroll; padding-left: 20px; padding-bottom: 20px; margin-top: 20px;" class="divme">
+        <h1>Your purchases:</h1>
+        <table style="overflow-x:auto;">
+            <tr>
+                <th>Purchase Date:</th>
+                <th>Products:</th>
+                <th>Total Price:</th>
+                <th>State:</th>
+            </tr>
+            {% if not purchases %}
+                <tr>
+                    <td colspan="5">No purchases yet.</td>
+                </tr>
+            {% else %}
+                {% for purchase in purchases %}
+                    <tr>
+                        <td>{{ purchase.purchased_at }}</td>
+                        <td>
+                            {% with orders=purchase.orders.all %}
+                                {% for product in orders %}
+                                    <p>{{ product }}{% if not forloop.last %}, {% endif %}</p>
+                                {% endfor %}
+                            {% endwith %}
+                        </td>
+                        <td>{{ purchase.total_price }} €</td>
+                        <td>
+                            {% if purchase.state == 0 %}
+                                <a class="btn btn-danger" href="{% url 'shop:payment' purchase.id %}">Pay now</a>
+                            {% else %}
+                                {{ purchase.get_state_display }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            {% endif %}
+        </table>
+        
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // as at least firefox sometimes messes up the checkboxes status, possibly because of caching states...
+            document.querySelectorAll('.order-checkbox').forEach(function(checkbox) {
+                var state = parseInt(checkbox.getAttribute('data-order-state'));
+                checkbox.checked = state === 1;
+            });
+        });
+        updates = document.querySelectorAll('input[type="checkbox"], input[type="number"]');
+        updates.forEach(checkbox => {
+            checkbox.addEventListener('change', function(event) {
+                // make a fetch request to update the order state
+                id = event.target.getAttribute('data-order-id')
+                let url = "{% url 'shop:update_customer_order' 0 %}".replace('0', id);
+                quantity = document.getElementById('quantity_' + id);
+                state = document.querySelector('input[type="checkbox"][data-order-id="' + id + '"]').checked ? 1 : 0;
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    body: JSON.stringify({
+                        state: state,
+                        quantity: quantity.value
+                    })
+                }).then(response => {
+                    if (!response.ok) {
+                        console.log('Error:', response);
+                    }
+                    else {
+                        // reload the page
+                        location.reload();
+                    }
+                }).catch(error => {
+                    console.error('Error:', error);
+                });
+            });
+        });
+        document.getElementById("purchase").addEventListener("click", function() {
+            // make a post request to create a purchase
+            let url = "{% url 'shop:purchase_customer_orders' %}";
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({
+                    orders: {{ object_list|state_filtered|ids_only }},
+                    total_price: {{ object_list|state_filtered|sum_prices }}
+                })
+            }).then(response => {
+                if (!response.ok) {
+                    console.log('Error:', response);
+                }
+                else {
+                    // reload the page
+                    location.reload();
+                }
+            }).catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    </script>
+{% endblock %}

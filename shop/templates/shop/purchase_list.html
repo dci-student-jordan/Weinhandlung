@@ -1,0 +1,172 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+    <h1>Purchases:</h1>
+    <div class="divme">
+        <h5>Filter by... :</h5>
+        <select name="customer" id="customer_filter" style="margin: 10px;">
+            <option value="-1">-- customer --</option>
+            {% for customer in customers %}
+                <option value="{{ customer.id }}"> {{ customer.username }} ({{ customer.first_name }} {{ customer.last_name }})</option>
+            {% endfor %}
+        </select>
+        <select name="product" id="product_filter" style="margin: 10px;">
+            <option value="-1">-- product - vintage --</option>
+            {% for product in products %}
+                <option value="{{ product.id }}"> {{ product }}</option>
+            {% endfor %}
+        </select>
+        <select name="date" id="date_filter" style="margin: 10px;">
+            <option value="-1">-- date --</option>
+            {% for date in dates %}
+                <option value="{{ date }}"> {{ date }}</option>
+            {% endfor %}
+        </select>
+        <select name="price" id="price_filter" style="margin: 10px;">
+            <option value="-1">-- price --</option>
+            {% for price in prices %}
+                <option value="{{ price }}">{{ price }}€</option>
+            {% endfor %}
+        </select>
+        <select name="state" id="state_filter" style="margin: 10px;">
+            <option value="-1">-- state --</option>
+            <option value="0">Pending</option>
+            <option value="1">Payed</option>
+            <option value="2">Shipped</option>
+            <option value="3">Delivered</option>
+            <option value="4">Canceled</option>
+        </select>
+    </div><div style="overflow: scroll; height: 57vh; margin-top: 20px;">
+        <table id="scrollable-table" style="overflow-x:auto;">
+            <thead>
+                <tr>
+                    <th>Purchase Date:</th>
+                    <th>Customer:</th>
+                    <th>Products:</th>
+                    <th>Total Price:</th>
+                    <th>State:</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if not purchases %}
+                    <tr>
+                        <td colspan="5">No purchases yet.</td>
+                    </tr>
+                {% else %}
+                    {% for purchase in purchases %}
+                        <tr>
+                            <td>{{ purchase.purchased_at }}</td>
+                            <td>{{ purchase.orders.first.customer }}</td>
+                            <td>
+                                {% with orders=purchase.orders.all %}
+                                    {% for product in orders %}
+                                        <p>{{ product }}{% if not forloop.last %}, {% endif %}</p>
+                                    {% endfor %}
+                                {% endwith %}
+                            </td>
+                            <td>{{ purchase.total_price }} €</td>
+                            <td>
+                                <form state-value={{purchase.state}} method="post" action="{% url 'shop:update_purchase' purchase.id %}{% if purchase.state == 4 %}?uncancel=1{% endif %}">
+                                {% csrf_token %}
+                                {{ form|crispy }}
+                            </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // form submission functionality to update the purchase state:
+            state_selects = document.querySelectorAll("select[id='id_state']");
+
+            state_selects.forEach(function(select) {
+                // hide its label as previous sibling
+                select.previousElementSibling.style.display = "none";
+                var formElement = select.parentElement.parentElement; // Get the form element
+                // set the select value to the state value
+                select.value = formElement.getAttribute("state-value");
+                select.addEventListener("change", function() {
+                    // Submit the form
+                    formElement.submit();
+                });
+            });
+
+
+            // Filter functionality
+            let state = document.getElementById("state_filter")
+            let customer = document.getElementById("customer_filter")
+            let product = document.getElementById("product_filter")
+            let date = document.getElementById("date_filter")
+            let price = document.getElementById("price_filter")
+            filters = [state, customer, product, date, price];
+            // Get the URL query string
+            var queryString = window.location.search;
+
+            // Split the query string by "&" to separate parameters
+            var params = queryString.split("&");
+
+            // Initialize variables for each parameter value
+            var state_val = null;
+            var customer_val = null;
+            var product_val = null;
+            var date_val = null;
+            var price_val = null;
+
+            // Loop through each parameter to find the ones starting with the specified names
+            params.forEach(function(param) {
+                if (param.startsWith("?state=")) {
+                    state_val = param.split("=")[1];
+                } else if (param.startsWith("?customer=") | param.startsWith("customer=")) {
+                    customer_val = param.split("=")[1];
+                } else if (param.startsWith("?product=") | param.startsWith("product=")) {
+                    product_val = param.split("=")[1];
+                } else if (param.startsWith("?date=") | param.startsWith("date=")) {
+                    date_val = param.split("=")[1];
+                } else if (param.startsWith("?price=") | param.startsWith("price=")) {
+                    price_val = param.split("=")[1];
+                }
+            });
+
+            // Log the values if found
+            if (state_val) {
+                console.log("STATE:", state_val);
+                state.value = state_val;
+            }
+            if (customer_val) {
+                console.log("CUSTOMER:", customer_val);
+                customer.value = customer_val;
+            }
+            if (product_val) {
+                console.log("PRODUCT:", product_val);
+                product.value = product_val;
+            }
+            if (date_val) {
+                console.log("DATE:", date_val);
+                date.value = date_val;
+            }
+            if (price_val) {
+                console.log("PRICE:", price_val);
+                price.value = price_val;
+            }
+
+            filters.forEach(function(filter) {
+                filter.addEventListener("change", function() {
+                    var url = "{% url 'shop:purchases' %}?";  // Start building the URL
+                    filters.forEach(function(filter) {
+                        if (filter.value !== '-1') {  // Check if filter value exists and is not empty
+                            url += filter.name + "=" + filter.value + "&";  // Add filter parameter to URL
+                        }
+                    });
+                    // Remove the last "&" from the URL
+                    url = url.slice(0, -1);
+                    window.location.href = url;  // Redirect to the constructed URL
+                });
+            });
+
+
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block content %}
+    <h1>{{ product.name }}</h1>
+    <h3>Description:</h3>
+    <p>{{ product.description }}</p>
+    {% with product.productvintage_set.all as vintages %}
+        <h3>Vintages: 
+            {% for vintage in vintages %}
+                <a class="btn btn btn-outline-light" href="{% url 'shop:vintage_detail' vintage.id %}">{{ vintage.vintage }}</a>
+            {% endfor %}
+        </h3>
+        {% if user.is_staff and vintages %}
+            <a class="btn btn btn-outline-light" style="margin: 20px;" href="{% url 'shop:product_update' product.id %}">Update</a>
+            <a class="btn btn btn-outline-warning" style="margin: 20px;" href="{% url 'shop:product_delete' product.id %}">Delete</a>
+        {% elif user.is_authenticated and vintages %}
+            <td><a class="btn btn btn-success topspace" href="{% url 'shop:customer_order' product.id %}">Order</a></td>
+        {% elif not vintages %}
+            <p>No vintages available.</p>
+        {% endif %}
+        {% if user.is_staff %}
+            <a class="btn btn-outline-light" style="margin: 20px; width: 80%;" href="{% url 'shop:vintage_create' %}?product={{ product.id }}">Add a new Vintage</a>
+        {% endif %}
+    {% endwith %}
+{% endblock %}

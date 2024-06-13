@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+<div style="max-height: 75vh; overflow-y: auto;">
+    <form method="post" action="{% url 'shop:vintage_delete' productvintage.id %}">
+    <h3>Sure you want to delete {{ productvintage.product.name }} {{ productvintage.vintage }} ?!:</h3>
+    <p><strong><em>This operation cannot be undone!!!</em></strong></p>
+    {% csrf_token %}
+    <button class="btn btn-outline-danger" method="post" id="submitMess" type="submit">Delete irrevocably</button>
+</form>
+</div>
+{% endblock %}

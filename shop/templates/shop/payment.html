@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+<h1>Pay your purchase of {{ object.purchased_at }}</h1>
+<h3>If only paying a bill would always be this way...</h3>
+<p>Real payment functionality is not yet implemented.</p>
+<h1><em>Price: {{ object.total_price }} €</em></h1>
+<form method="post">
+    {% csrf_token %}
+    {{ form|crispy }}
+    <button class="btn btn-outline-light" method="post" type="submit">Pay</button>
+</form>
+{% endblock %}

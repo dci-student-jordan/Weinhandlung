@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+{% block content %}
+    <h1>{{ vintage.product.name }} {{vintage.vintage}}</h1>
+    <p>({{ vintage.product.description }})</h3>
+    <h3>Vintage Description:</h3>
+    <p>{{ vintage.vintage_description }}</p>
+    <h3>Price: {{ vintage.price }} €</h3>
+    {% with vintage.stock|difference:vintage.available_stock as avail_diff %}
+    <h3>Available: {{ vintage.available_stock }}{% if avail_diff %}<em> ({{ avail_diff }} reserved)</em>{% endif %}</h3>
+        </td>
+    {% endwith %}
+    {% if user.is_staff %}
+        <a class="btn btn btn-outline-light" style="margin: 20px;" href="{% url 'shop:vintage_update' vintage.id %}">Update</a>
+        <a class="btn btn btn-outline-warning" style="margin: 20px;" href="{% url 'shop:vintage_delete' vintage.id %}">Delete</a>
+    {% elif user.is_authenticated %}
+        <td><a class="btn btn btn-success topspace" href="{% url 'shop:customer_order' vintage.product.id %}?vintage={{vintage.id}}">Order</a></td>
+    {% endif %}
+{% endblock %}

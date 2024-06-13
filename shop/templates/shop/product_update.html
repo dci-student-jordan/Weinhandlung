@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+<div style="max-height: 75vh; overflow-y: auto;">
+    <form method="post" action="{% url 'shop:product_update' product.id %}">
+        <h3>Update data for '{{ product.name }}' here:</h3>
+        {% csrf_token %}
+        {{ form|crispy }}
+        <button class="btn btn-outline-light" method="post" id="submitMess" type="submit">Update</button>
+    </form>
+    <p class="errorlist">{{message}}</p>
+</div>
+{% endblock %}

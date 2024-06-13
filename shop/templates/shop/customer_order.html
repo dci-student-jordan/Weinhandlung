@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+<div style="max-height: 75vh; overflow-y: auto;">
+    <h3>Place your order for {{ product.name }}:</h3>
+    <p>({{ product.description }})</p>
+    <select name="product_select" id="product_id">
+        <option value="-1">-- product--</option>
+        {% for product in products %}
+            <option value="{{ product.id }}">{{ product.name }}</option>
+        {% endfor %}
+    </select>
+    <form method="post" action="{% url 'shop:customer_order' product.id %}" id="new-form" class="topspace">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <br>
+        <h3 id="id_total">price: {{ price }} €</h3>
+        <button class="btn btn-success topspace" method="post" id="submitMess" type="submit">Order</button>
+    </form>
+</div>
+<script>
+    var price = {{ price }};
+    quantity = document.getElementById("id_quantity");
+    vintage_product = document.getElementById("id_product");
+    vine_product = document.getElementById("product_id")
+    vine_product.value = {{ product.id }};
+    vine_product.addEventListener("change", function(event) {
+        // update the form with the selected product
+        vine_product_id = event.target.value;
+        if (vine_product_id == -1) {
+            return;
+        }
+        url = "{% url 'shop:customer_order' 0 %}".replace('0', vine_product_id);
+        window.location.href = url
+    })
+    vintage_product.addEventListener("change", function(event) {
+        // update the price and quantity
+        vintage_product_id = event.target.value;
+        if (vintage_product_id == "") {
+            return;
+        }
+        url = "{% url 'shop:vintage_availability' 0 %}".replace('0', vintage_product_id);
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                quantity.max = data.available_stock;
+                price = data.price;
+                var total = quantity.value * price;
+                document.getElementById("id_total").innerText = 'total price: ' + total + ' €';
+            });
+    });
+    quantity.addEventListener("change", function() {
+        var total = quantity.value * price;
+        document.getElementById("id_total").innerText = 'total price: ' + total + ' €';
+    });
+</script>
+{% endblock %}
