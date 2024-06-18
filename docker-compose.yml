@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:latest
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./weinhandel.sql:/docker-entrypoint-initdb.d/weinhandel.sql
+    restart: always
+    environment:
+      MYSQL_DATABASE: 'weinhandel'
+      MYSQL_USER: 'user'
+      MYSQL_PASSWORD: 'docker_password'
+      MYSQL_ROOT_PASSWORD: 'docker_password'
+    ports:
+      - "3306:3306"
+
+  web:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/code
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      DATABASE_HOST: db
+      DATABASE_NAME: weinhandel
+      DATABASE_USER: user
+      DATABASE_PASSWORD: docker_password
+
+volumes:
+  mysql_data:
