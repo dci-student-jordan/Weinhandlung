@@ -9,9 +9,10 @@ Django Project created during my internship for the Packend Developer Course at 
 - Users can place orders, add to whishlist, manage their cart and account data...
 
 ## Try out with docker
-Supposed you have docker compose installed, simply run "docker compose up --build" and visit [0.0.0.0:8080](0.0.0.0:8080)
+Supposed you have docker compose installed, simply run "docker compose up" and visit [0.0.0.0:8080](http://0.0.0.0:8080)
 
 ## Try it out manually
 To test clone this repo, create a venv, activate, run pip install -r requirements (supposing you have mysql installed), run the weinhandel.sql to create and populate the db, and then run python manage.py runserver and enjoy.
 
-To test as staff user login as Staffy, pw cde3456
+To test as customer signup and play around or sign in as "Johnny", pw "ju7890ßü".
+To test as staff user, login as "Staffy", pw "cde3456"

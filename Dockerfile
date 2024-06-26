@@ -23,5 +23,7 @@ COPY weinhandel.sql /docker-entrypoint-initdb.d/
 COPY wait-for-it.sh /wait-for-it.sh
 RUN chmod +x /wait-for-it.sh
 
-# Run the application using wait-for-it.sh
-CMD ["/wait-for-it.sh", "db:3306", "--", "python", "manage.py", "runserver", "0.0.0.0:8000"]
+# Run the application using wait-for-it.sh from sthe start.sh
+COPY start.sh /start.sh
+RUN chmod +x /start.sh
+CMD ["/start.sh"]

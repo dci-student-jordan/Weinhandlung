@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-61@6^ffikm)+)-+0w8m+!=b^ut0!w+18(fq9fgrrk&!@1uqi_#
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["0.0.0.0"]
+ALLOWED_HOSTS = ["0.0.0.0", "localhost"]
 
 
 # Application definition
@@ -141,4 +141,4 @@ AUTH_USER_MODEL = 'accounts.Customer'
 
 CRISPY_TEMPLATE_PACK = 'bootstrap5'
 
-X_FRAME_OPTIONS = 'ALLOW-FROM http://localhost/'
+
