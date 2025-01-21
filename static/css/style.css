@@ -1,6 +1,29 @@
 @font-face {
-    font-family: 'CELTG.TTF';
+    font-family: 'Celtic';
     src: url('../fonts/CELTG.TTF') format('truetype');
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Minecraftia-Regular';
+    src: url('../fonts/Minecraftia-Regular.ttf') format('truetype');
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'OldNewspaperTypes';
+    src: url('../fonts/OldNewspaperTypes.ttf') format('truetype');
+    font-display: swap;
+}
+
+/* Add classes for other fonts */
+.font1 {
+    font-family: 'Minecraftia-Regular', sans-serif;
+    font-size-adjust: 0.89; /* Adjust this value to scale the font */
+}
+
+.font2 {
+    font-family: 'OldNewspaperTypes', sans-serif;
 }
 
 html {
@@ -8,7 +31,7 @@ html {
 }
 
 body {
-    font-family: 'CELTG.TTF', sans-serif;
+    font-family: 'Celtic', sans-serif;
     background-color: #000000;
     color: antiquewhite;
     text-shadow: 1px 1px 5px #000000;
@@ -123,8 +146,8 @@ a:hover {
 
 @media (min-width: 750px) {
     section {
-        margin-left: 14vw;
-        max-width: 47vw;
+        margin-left: 11vw;
+        max-width: 63vw;
         backdrop-filter: blur(8px);
         border-radius: 10px;
         background-color: #00000058;
