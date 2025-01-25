@@ -21,7 +21,7 @@
             {% for product in products %}
                 <tr>
                     {% with product.productvintage_set.all as vintages %}
-                        <td><a class="btn btn btn-outline-light" href="{% url 'shop:product_detail' product.id %}">{{ product.name }}</a></td>
+                        <td><a class="btn btn btn-outline-light" href="{% url 'shop:product_detail' product.id %}" style="padding:5px; white-space: normal;" >{{ product.name }}</a></td>
                         <td title="{{ product.description }}">{{ product.description|truncatewords:15 }}</td>
                             <td>
                                 <div style="overflow: scroll;">

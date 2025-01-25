@@ -29,7 +29,7 @@ USE `weinhandel`;
 -- Tabellenstruktur für Tabelle `accounts_customer`
 --
 
-CREATE TABLE `accounts_customer` (
+CREATE TABLE IF NOT EXISTS `accounts_customer` (
   `id` bigint(20) NOT NULL,
   `password` varchar(128) NOT NULL,
   `last_login` datetime(6) DEFAULT NULL,
@@ -61,7 +61,7 @@ INSERT INTO `accounts_customer` (`id`, `password`, `last_login`, `is_superuser`,
 -- Tabellenstruktur für Tabelle `accounts_customer_groups`
 --
 
-CREATE TABLE `accounts_customer_groups` (
+CREATE TABLE IF NOT EXISTS `accounts_customer_groups` (
   `id` bigint(20) NOT NULL,
   `customer_id` bigint(20) NOT NULL,
   `group_id` int(11) NOT NULL
@@ -73,7 +73,7 @@ CREATE TABLE `accounts_customer_groups` (
 -- Tabellenstruktur für Tabelle `accounts_customer_user_permissions`
 --
 
-CREATE TABLE `accounts_customer_user_permissions` (
+CREATE TABLE IF NOT EXISTS `accounts_customer_user_permissions` (
   `id` bigint(20) NOT NULL,
   `customer_id` bigint(20) NOT NULL,
   `permission_id` int(11) NOT NULL
@@ -85,7 +85,7 @@ CREATE TABLE `accounts_customer_user_permissions` (
 -- Tabellenstruktur für Tabelle `auth_group`
 --
 
-CREATE TABLE `auth_group` (
+CREATE TABLE IF NOT EXISTS `auth_group` (
   `id` int(11) NOT NULL,
   `name` varchar(150) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -96,7 +96,7 @@ CREATE TABLE `auth_group` (
 -- Tabellenstruktur für Tabelle `auth_group_permissions`
 --
 
-CREATE TABLE `auth_group_permissions` (
+CREATE TABLE IF NOT EXISTS `auth_group_permissions` (
   `id` bigint(20) NOT NULL,
   `group_id` int(11) NOT NULL,
   `permission_id` int(11) NOT NULL
@@ -108,7 +108,7 @@ CREATE TABLE `auth_group_permissions` (
 -- Tabellenstruktur für Tabelle `auth_permission`
 --
 
-CREATE TABLE `auth_permission` (
+CREATE TABLE IF NOT EXISTS `auth_permission` (
   `id` int(11) NOT NULL,
   `name` varchar(255) NOT NULL,
   `content_type_id` int(11) NOT NULL,
@@ -171,7 +171,7 @@ INSERT INTO `auth_permission` (`id`, `name`, `content_type_id`, `codename`) VALU
 -- Tabellenstruktur für Tabelle `django_admin_log`
 --
 
-CREATE TABLE `django_admin_log` (
+CREATE TABLE IF NOT EXISTS `django_admin_log` (
   `id` int(11) NOT NULL,
   `action_time` datetime(6) NOT NULL,
   `object_id` longtext DEFAULT NULL,
@@ -237,7 +237,7 @@ INSERT INTO `django_admin_log` (`id`, `action_time`, `object_id`, `object_repr`,
 -- Tabellenstruktur für Tabelle `django_content_type`
 --
 
-CREATE TABLE `django_content_type` (
+CREATE TABLE IF NOT EXISTS `django_content_type` (
   `id` int(11) NOT NULL,
   `app_label` varchar(100) NOT NULL,
   `model` varchar(100) NOT NULL
@@ -266,7 +266,7 @@ INSERT INTO `django_content_type` (`id`, `app_label`, `model`) VALUES
 -- Tabellenstruktur für Tabelle `django_migrations`
 --
 
-CREATE TABLE `django_migrations` (
+CREATE TABLE IF NOT EXISTS `django_migrations` (
   `id` bigint(20) NOT NULL,
   `app` varchar(255) NOT NULL,
   `name` varchar(255) NOT NULL,
@@ -312,7 +312,7 @@ INSERT INTO `django_migrations` (`id`, `app`, `name`, `applied`) VALUES
 -- Tabellenstruktur für Tabelle `django_session`
 --
 
-CREATE TABLE `django_session` (
+CREATE TABLE IF NOT EXISTS `django_session` (
   `session_key` varchar(40) NOT NULL,
   `session_data` longtext NOT NULL,
   `expire_date` datetime(6) NOT NULL
@@ -332,7 +332,7 @@ INSERT INTO `django_session` (`session_key`, `session_data`, `expire_date`) VALU
 -- Tabellenstruktur für Tabelle `shop_product`
 --
 
-CREATE TABLE `shop_product` (
+CREATE TABLE IF NOT EXISTS `shop_product` (
   `id` bigint(20) NOT NULL,
   `name` varchar(255) NOT NULL,
   `description` longtext NOT NULL
@@ -356,7 +356,7 @@ INSERT INTO `shop_product` (`id`, `name`, `description`) VALUES
 -- Tabellenstruktur für Tabelle `shop_productvintage`
 --
 
-CREATE TABLE `shop_productvintage` (
+CREATE TABLE IF NOT EXISTS `shop_productvintage` (
   `id` bigint(20) NOT NULL,
   `vintage` int(11) NOT NULL,
   `vintage_description` longtext NOT NULL,

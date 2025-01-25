@@ -13,6 +13,10 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 from pathlib import Path
 import os
 
+# env
+from dotenv import load_dotenv
+load_dotenv()
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -21,12 +25,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-61@6^ffikm)+)-+0w8m+!=b^ut0!w+18(fq9fgrrk&!@1uqi_#'
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-61@6^ffikm)+)-+0w8m+!=b^ut0!w+18(fq9fgrrk&!@1uqi_#')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = ["0.0.0.0", "localhost"]
+ALLOWED_HOSTS = ["weinhandlung-production.up.railway.app", "127.0.0.1", "localhost", "0.0.0.0"]
+
+CSRF_TRUSTED_ORIGINS = ["https://weinhandlung-production.up.railway.app"]
 
 
 # Application definition
@@ -53,6 +59,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'WeinhandelDjP.urls'
@@ -83,11 +90,11 @@ WSGI_APPLICATION = 'WeinhandelDjP.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'weinhandel',
-        'USER': 'user',
-        'PASSWORD': 'docker_password',
-        'HOST': 'db',
-        'PORT': '3306',
+        'NAME': os.environ.get('DATABASE_NAME', 'weinhandlung'),
+        'USER': os.environ.get('DATABASE_USER', 'user'),
+        'PASSWORD': os.environ.get('DATABASE_PASSWORD', 'docker_password'),
+        'HOST': os.environ.get('DATABASE_HOST', 'db'),
+        'PORT': os.environ.get('DATABASE_PORT', '3306'),
     }
 }
 
@@ -139,7 +146,34 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'accounts.Customer'
 
-
 CRISPY_TEMPLATE_PACK = 'bootstrap5'
 
+if DEBUG == False:
+
+    # Security settings
+    SECURE_SSL_REDIRECT = os.environ.get('SECURE_SSL_REDIRECT', 'False') == 'True'
+    # SESSION_COOKIE_SECURE = False
+    # CSRF_COOKIE_SECURE = False
+
+    # Security settings
+    # SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+
+    # Ensure that your application only sends cookies over HTTPS connections
+    SECURE_HSTS_SECONDS = 31536000  # 1 year
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+
+    # Prevent the browser from guessing the content type
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+
+    # Prevent the browser from rendering the site in a frame
+    X_FRAME_OPTIONS = 'DENY'
+
+    # Ensure that your application only sends cookies over HTTPS connections
+    SECURE_BROWSER_XSS_FILTER = True
+
+    # Ensure that your application only sends cookies over HTTPS connections
+    SECURE_REFERRER_POLICY = 'same-origin'
 
