@@ -19,7 +19,7 @@
 /* Add classes for other fonts */
 .font1 {
     font-family: 'Minecraftia-Regular', sans-serif;
-    font-size-adjust: 0.89; /* Adjust this value to scale the font */
+    font-size-adjust: 0.95; /* Adjust this value to scale the font */
 }
 
 .font2 {

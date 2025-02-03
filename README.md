@@ -14,7 +14,7 @@ This app is for testing purposes [deployed here](https://weinhandlung-production
 You can also test it locally:
 
 ## Try out with docker
-Supposed you have docker installed clone this repo and inside the root folder simply run "docker compose up" and visit [0.0.0.0:8080](http://0.0.0.0:8080)
+Supposed you have docker installed clone this repo and inside the root folder simply run "docker-compose up" and visit [0.0.0.0:8080](http://0.0.0.0:8080)
 
 ## Try it out manually
 You can also clone, create a venv, activate, run pip install -r requirements (supposing you have mysql installed), run the weinhandel.sql to create and populate the db, and then run python manage.py runserver and enjoy.
